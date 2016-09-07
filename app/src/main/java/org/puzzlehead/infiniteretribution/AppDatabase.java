@@ -24,24 +24,18 @@ public class AppDatabase extends SQLiteOpenHelper
 
     protected static AppDatabase instance = null;
 
-    public static synchronized void initialize(Context context)
+    protected static Context context = null;
+
+    public static synchronized void setContext(Context context)
     {
-        if (instance == null)
-        {
-            instance = new AppDatabase(context);
-        }
+        AppDatabase.context = context;
     }
 
     public static synchronized AppDatabase getInstance()
     {
-        return getInstance(null);
-    }
-
-    public static synchronized AppDatabase getInstance(Context context)
-    {
-        if (context != null)
+        if (instance != null)
         {
-            initialize(context);
+            instance = new AppDatabase(context);
         }
 
         return instance;

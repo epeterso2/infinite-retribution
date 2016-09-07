@@ -12,6 +12,6 @@ public class InfiniteRetributionApplication extends Application
     {
         super.onCreate();
 
-        AppDatabase.initialize(this);
+        AppDatabase.setContext(this);
     }
 }

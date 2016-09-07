@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/add"
+        android:title="Add"
+        android:icon="@drawable/ic_add_circle_white_48dp"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/remove"
+        android:title="Remove"
+        android:icon="@drawable/ic_remove_circle_white_48dp"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/edit"
+        android:title="Edit"
+        android:icon="@drawable/ic_edit_white_48dp"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/sort_name_asc"
+        android:title="Sort by Name Asc"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/sort_name_desc"
+        android:title="Sort by Name Desc"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/sort_value_asc"
+        android:title="Sort by Value Asc"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/sort_value_desc"
+        android:title="Sort by Value Desc"
+        app:showAsAction="never"
+        />
+
+</menu>
