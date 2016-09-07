@@ -2,12 +2,14 @@ package org.puzzlehead.infiniteretribution;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -17,8 +19,9 @@ import android.view.View;
  * item details are presented side-by-side with a list of items
  * in a {@link TargetListActivity}.
  */
-public class TargetDetailActivity extends AppCompatActivity
+public class TargetDetailActivity extends AppCompatActivity implements AppDatabase.Listener
 {
+    protected Target target = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,6 +37,9 @@ public class TargetDetailActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                target.setCount(target.getCount() - 1);
+                AppDatabase.getInstance().updateTarget(target);
+
                 Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -61,6 +67,8 @@ public class TargetDetailActivity extends AppCompatActivity
 
             Log.d(getClass().getSimpleName(), "id = " + id);
 
+            target = AppDatabase.getInstance().getTarget(id);
+
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
@@ -75,20 +83,88 @@ public class TargetDetailActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.target_detail_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
+        switch (item.getItemId())
         {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpTo(new Intent(this, TargetListActivity.class));
-            return true;
+            case android.R.id.home:
+                navigateUpTo(new Intent(this, TargetListActivity.class));
+                break;
+
+            case R.id.edit:
+                break;
+
+            case R.id.add:
+                target.setCount(target.getCount() + 1);
+                AppDatabase.getInstance().updateTarget(target);
+                break;
+
+            case R.id.remove:
+                target.setCount(target.getCount() - 1);
+                AppDatabase.getInstance().updateTarget(target);
+                break;
+
+            case R.id.delete:
+                AppDatabase.getInstance().deleteTarget(target);
+                finish();
+                break;
+
+            case R.id.max:
+                target.setCount(Long.MAX_VALUE);
+                AppDatabase.getInstance().updateTarget(target);
+                break;
+
+            case R.id.min:
+                target.setCount(Long.MIN_VALUE);
+                AppDatabase.getInstance().updateTarget(target);
+                break;
+
+            case R.id.reset:
+                target.setCount(0);
+                AppDatabase.getInstance().updateTarget(target);
+                break;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+
+        return true;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState)
+    {
+        super.onCreate(savedInstanceState, persistentState);
+
+        AppDatabase.getInstance().addListener(this);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        AppDatabase.getInstance().removeListener(this);
+    }
+
+    protected void updateView()
+    {
+        ;
+    }
+
+    @Override
+    public void onChange()
+    {
+        Log.d(getClass().getSimpleName(), "onChange()");
+
+        updateView();
     }
 }
