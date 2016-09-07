@@ -51,8 +51,10 @@ public class TargetListActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Created new target", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                AppDatabase.getInstance().createTarget(new Target(0, "Primary Target", 0));
             }
         });
 
@@ -77,6 +79,7 @@ public class TargetListActivity extends AppCompatActivity
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>
+        implements AppDatabase.Listener
     {
 
         private final List<Target> mValues;
@@ -84,13 +87,11 @@ public class TargetListActivity extends AppCompatActivity
         public SimpleItemRecyclerViewAdapter(List<Target> items)
         {
             mValues = items;
+            AppDatabase.getInstance().addListener(this);
         }
 
         public void update()
         {
-            mValues.clear();
-            mValues.addAll(AppDatabase.getInstance().getTargets());
-            notifyDataSetChanged();
         }
 
         @Override
@@ -136,7 +137,6 @@ public class TargetListActivity extends AppCompatActivity
 
                     holder.mItem.setCount(holder.mItem.getCount() + 1);
                     AppDatabase.getInstance().updateTarget(holder.mItem);
-                    update();
                 }
             });
 
@@ -174,6 +174,14 @@ public class TargetListActivity extends AppCompatActivity
         public int getItemCount()
         {
             return mValues.size();
+        }
+
+        @Override
+        public void onChange()
+        {
+            mValues.clear();
+            mValues.addAll(AppDatabase.getInstance().getTargets());
+            notifyDataSetChanged();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder

@@ -15,6 +15,11 @@ import java.util.List;
  */
 public class AppDatabase extends SQLiteOpenHelper
 {
+    public interface Listener
+    {
+        public void onChange();
+    }
+
     protected static Context context = null;
 
     protected static AppDatabase instance = null;
@@ -32,6 +37,8 @@ public class AppDatabase extends SQLiteOpenHelper
     protected static final int COLUMN_ID_INDEX = 0;
     protected static final int COLUMN_NAME_INDEX = 1;
     protected static final int COLUMN_COUNT_INDEX = 2;
+
+    protected List<Listener> listeners = new ArrayList<Listener>();
 
     public static synchronized void setContext(Context context)
     {
@@ -53,6 +60,19 @@ public class AppDatabase extends SQLiteOpenHelper
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public synchronized void addListener(Listener listener)
+    {
+        if (listener != null && ! listeners.contains(listener))
+        {
+            listeners.add(listener);
+        }
+    }
+
+    public synchronized void removeListener(Listener listener)
+    {
+        listeners.remove(listener);
+    }
+
     @Override
     public synchronized void onCreate(SQLiteDatabase sqLiteDatabase)
     {
@@ -66,6 +86,8 @@ public class AppDatabase extends SQLiteOpenHelper
                         ")");
 
         sqLiteDatabase.execSQL("INSERT INTO " + TABLE_TARGETS + " (name, count) VALUES ('Eric Peterson', 8675309)");
+
+        notifyListeners();
     }
 
     @Override
@@ -75,6 +97,8 @@ public class AppDatabase extends SQLiteOpenHelper
 
         sqLiteDatabase.execSQL("DROP TABLE " + TABLE_TARGETS);
         onCreate(getWritableDatabase());
+
+        notifyListeners();
     }
 
     public synchronized long createTarget(Target target)
@@ -89,6 +113,7 @@ public class AppDatabase extends SQLiteOpenHelper
         values.put(COLUMN_COUNT, target.getCount());
 
         target.setId(getWritableDatabase().insert(TABLE_TARGETS, null, values));
+        notifyListeners();
 
         return target.getId();
     }
@@ -127,12 +152,19 @@ public class AppDatabase extends SQLiteOpenHelper
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, target.getName());
         values.put(COLUMN_COUNT, target.getCount());
-        return target == null ? 0 : getWritableDatabase().update(TABLE_TARGETS, values, WHERE_ID_EQUALS, getIdArgument(target.getId()));
+
+        int result = target == null ? 0 : getWritableDatabase().update(TABLE_TARGETS, values, WHERE_ID_EQUALS, getIdArgument(target.getId()));
+        notifyListeners();
+
+        return result;
     }
 
     public synchronized int deleteTarget(long id)
     {
-        return getWritableDatabase().delete(TABLE_TARGETS, WHERE_ID_EQUALS, getIdArgument(id));
+        int result = getWritableDatabase().delete(TABLE_TARGETS, WHERE_ID_EQUALS, getIdArgument(id));
+        notifyListeners();
+
+        return result;
     }
 
     public synchronized int deleteTarget(Target target)
@@ -148,5 +180,13 @@ public class AppDatabase extends SQLiteOpenHelper
     protected Target getTarget(Cursor cursor)
     {
         return new Target(cursor.getLong(COLUMN_ID_INDEX), cursor.getString(COLUMN_NAME_INDEX), cursor.getLong(COLUMN_COUNT_INDEX));
+    }
+
+    protected synchronized void notifyListeners()
+    {
+        for (Listener listener: listeners)
+        {
+            listener.onChange();
+        }
     }
 }
