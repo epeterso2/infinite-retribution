@@ -1,8 +1,5 @@
 package org.puzzlehead.infiniteretribution;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by epeterson on 9/7/2016.
  */
@@ -77,17 +74,5 @@ public class Target
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (int) (count ^ (count >>> 32));
         return result;
-    }
-
-    public static List<Target> getFakeTargets()
-    {
-        List<Target> targets = new ArrayList<Target>();
-        targets.add(new Target(1, "Ozan Gunay", Long.MAX_VALUE));
-        targets.add(new Target(2, "Eric Peterson", 8675309));
-        targets.add(new Target(3, "Nicole Debickes", 42));
-        targets.add(new Target(4, "Kevin Toussaint", 0));
-        targets.add(new Target(5, "John Holmes", Long.MIN_VALUE));
-
-        return targets;
     }
 }

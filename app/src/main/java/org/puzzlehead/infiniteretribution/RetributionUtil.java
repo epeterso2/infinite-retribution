@@ -20,9 +20,19 @@ public class RetributionUtil
             return "∞";
         }
 
+        else if (count == Long.MAX_VALUE - 1)
+        {
+            return "71!";
+        }
+
         else if (count == Long.MIN_VALUE)
         {
             return "-∞";
+        }
+
+        else if (count == Long.MIN_VALUE + 1)
+        {
+            return "-(71!)";
         }
 
         else

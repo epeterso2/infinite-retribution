@@ -3,13 +3,12 @@ package org.puzzlehead.infiniteretribution;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -167,6 +166,7 @@ public class TargetDetailActivity extends AppCompatActivity
     {
         final EditText editText = new EditText(this);
         editText.setText(target.getName() == null ? "" : target.getName());
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Target Name");
