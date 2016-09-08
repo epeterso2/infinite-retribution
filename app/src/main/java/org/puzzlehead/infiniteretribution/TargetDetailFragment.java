@@ -59,8 +59,6 @@ public class TargetDetailFragment extends Fragment implements AppDatabase.Listen
                              Bundle savedInstanceState)
     {
         rootView = inflater.inflate(R.layout.target_detail, container, false);
-
-        // Show the dummy content as text in a TextView.
         onChange();
 
         return rootView;
@@ -77,8 +75,6 @@ public class TargetDetailFragment extends Fragment implements AppDatabase.Listen
     @Override
     public void onChange()
     {
-        Log.d(getClass().getSimpleName(), "onChange()");
-
         mItem = AppDatabase.getInstance().getTarget(mItem.getId());
 
         if (mItem != null)
@@ -90,7 +86,7 @@ public class TargetDetailFragment extends Fragment implements AppDatabase.Listen
                 appBarLayout.setTitle(mItem.getName());
             }
 
-            ((TextView) rootView.findViewById(R.id.target_detail)).setText(Long.toString(mItem.getCount()));
+            ((TextView) rootView.findViewById(R.id.target_detail)).setText(RetributionUtil.countToString(mItem.getCount()));
         }
     }
 }

@@ -51,9 +51,6 @@ public class TargetListActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                Snackbar.make(view, "Created new target", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
                 AppDatabase.getInstance().createTarget(new Target(0, "Primary Target", 0));
             }
         });
@@ -90,10 +87,6 @@ public class TargetListActivity extends AppCompatActivity
             AppDatabase.getInstance().addListener(this);
         }
 
-        public void update()
-        {
-        }
-
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
@@ -106,26 +99,7 @@ public class TargetListActivity extends AppCompatActivity
         public void onBindViewHolder(final ViewHolder holder, int position)
         {
             holder.mItem = mValues.get(position);
-            long count = holder.mItem.getCount();
-
-            String countText;
-
-            if (count == Long.MAX_VALUE)
-            {
-                countText = "∞";
-            }
-
-            else if (count == Long.MIN_VALUE)
-            {
-                countText = "-∞";
-            }
-
-            else
-            {
-                countText = Long.toString(count);
-            }
-
-            holder.mIdView.setText(countText);
+            holder.mIdView.setText(RetributionUtil.countToString(mValues.get(position).getCount()));
             holder.mContentView.setText(mValues.get(position).getName());
 
             holder.mView.setOnClickListener(new View.OnClickListener()
@@ -133,20 +107,6 @@ public class TargetListActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view)
                 {
-                    Log.d(TAG, "onClick() id: " + Long.toString(holder.mItem.getId()));
-
-                    holder.mItem.setCount(holder.mItem.getCount() + 1);
-                    AppDatabase.getInstance().updateTarget(holder.mItem);
-                }
-            });
-
-            holder.mView.setOnLongClickListener(new View.OnLongClickListener()
-            {
-                @Override
-                public boolean onLongClick(View v)
-                {
-                    Log.d(TAG, "onLongClick() id: " + Long.toString(holder.mItem.getId()));
-
                     if (mTwoPane)
                     {
                         Bundle arguments = new Bundle();
@@ -158,14 +118,12 @@ public class TargetListActivity extends AppCompatActivity
                                 .commit();
                     } else
                     {
-                        Context context = v.getContext();
+                        Context context = view.getContext();
                         Intent intent = new Intent(context, TargetDetailActivity.class);
                         intent.putExtra(TargetDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
 
                         context.startActivity(intent);
                     }
-
-                    return true;
                 }
             });
         }

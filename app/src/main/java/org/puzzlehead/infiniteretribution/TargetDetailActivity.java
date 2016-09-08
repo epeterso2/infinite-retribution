@@ -22,7 +22,7 @@ import android.widget.EditText;
  * item details are presented side-by-side with a list of items
  * in a {@link TargetListActivity}.
  */
-public class TargetDetailActivity extends AppCompatActivity implements AppDatabase.Listener
+public class TargetDetailActivity extends AppCompatActivity
 {
     protected Target target = null;
 
@@ -40,11 +40,8 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
             @Override
             public void onClick(View view)
             {
-                target.setCount(target.getCount() - 1);
+                target.setCount(RetributionUtil.add(target.getCount(), 1));
                 AppDatabase.getInstance().updateTarget(target);
-
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
 
@@ -107,16 +104,15 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
                 break;
 
             case R.id.delete:
-                AppDatabase.getInstance().deleteTarget(target);
-                finish();
+                delete();
                 break;
 
             case R.id.add:
-                updateTargetCount(target.getCount() + 1);
+                updateTargetCount(RetributionUtil.add(target.getCount(), 1));
                 break;
 
             case R.id.remove:
-                updateTargetCount(target.getCount() - 1);
+                updateTargetCount(RetributionUtil.add(target.getCount(), -1));
                 break;
 
             case R.id.max:
@@ -128,7 +124,7 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
                 break;
 
             case R.id.doubleUp:
-                updateTargetCount(target.getCount() * 2);
+                updateTargetCount(RetributionUtil.multiply(target.getCount(), 2));
                 break;
 
             case R.id.halve:
@@ -136,7 +132,24 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
                 break;
 
             case R.id.change_sign:
-                updateTargetCount(target.getCount() * -1);
+                long count;
+
+                if (target.getCount() == Long.MAX_VALUE)
+                {
+                    count = Long.MIN_VALUE;
+                }
+
+                else if (target.getCount() == Long.MIN_VALUE)
+                {
+                    count = Long.MAX_VALUE;
+                }
+
+                else
+                {
+                    count = target.getCount() * -1;
+                }
+
+                updateTargetCount(count);
                 break;
 
             case R.id.reset:
@@ -179,38 +192,35 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
         alert.show();
     }
 
+    protected void delete()
+    {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(target.getName());
+        alert.setMessage("Delete this target?");
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                AppDatabase.getInstance().deleteTarget(target);
+                finish();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                ;
+            }
+        });
+
+        alert.show();
+    }
+
     protected void updateTargetCount(long count)
     {
         target.setCount(count);
         AppDatabase.getInstance().updateTarget(target);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState)
-    {
-        super.onCreate(savedInstanceState, persistentState);
-
-        AppDatabase.getInstance().addListener(this);
-    }
-
-    @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-
-        AppDatabase.getInstance().removeListener(this);
-    }
-
-    protected void updateView()
-    {
-        ;
-    }
-
-    @Override
-    public void onChange()
-    {
-        Log.d(getClass().getSimpleName(), "onChange()");
-
-        updateView();
     }
 }
