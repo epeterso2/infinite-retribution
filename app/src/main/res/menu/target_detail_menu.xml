@@ -26,6 +26,24 @@
         />
 
     <item
+        android:id="@+id/doubleUp"
+        android:title="Double"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/halve"
+        android:title="Halve"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/change_sign"
+        android:title="Change Sign"
+        app:showAsAction="never"
+        />
+
+    <item
         android:id="@+id/max"
         android:title="Max"
         app:showAsAction="never"

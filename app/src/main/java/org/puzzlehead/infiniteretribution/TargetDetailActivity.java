@@ -1,17 +1,20 @@
 package org.puzzlehead.infiniteretribution;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 /**
  * An activity representing a single Target detail screen. This
@@ -100,16 +103,7 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
                 break;
 
             case R.id.edit:
-                break;
-
-            case R.id.add:
-                target.setCount(target.getCount() + 1);
-                AppDatabase.getInstance().updateTarget(target);
-                break;
-
-            case R.id.remove:
-                target.setCount(target.getCount() - 1);
-                AppDatabase.getInstance().updateTarget(target);
+                edit();
                 break;
 
             case R.id.delete:
@@ -117,19 +111,36 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
                 finish();
                 break;
 
+            case R.id.add:
+                updateTargetCount(target.getCount() + 1);
+                break;
+
+            case R.id.remove:
+                updateTargetCount(target.getCount() - 1);
+                break;
+
             case R.id.max:
-                target.setCount(Long.MAX_VALUE);
-                AppDatabase.getInstance().updateTarget(target);
+                updateTargetCount(Long.MAX_VALUE);
                 break;
 
             case R.id.min:
-                target.setCount(Long.MIN_VALUE);
-                AppDatabase.getInstance().updateTarget(target);
+                updateTargetCount(Long.MIN_VALUE);
+                break;
+
+            case R.id.doubleUp:
+                updateTargetCount(target.getCount() * 2);
+                break;
+
+            case R.id.halve:
+                updateTargetCount(target.getCount() / 2);
+                break;
+
+            case R.id.change_sign:
+                updateTargetCount(target.getCount() * -1);
                 break;
 
             case R.id.reset:
-                target.setCount(0);
-                AppDatabase.getInstance().updateTarget(target);
+                updateTargetCount(0);
                 break;
 
             default:
@@ -137,6 +148,41 @@ public class TargetDetailActivity extends AppCompatActivity implements AppDataba
         }
 
         return true;
+    }
+
+    protected void edit()
+    {
+        final EditText editText = new EditText(this);
+        editText.setText(target.getName() == null ? "" : target.getName());
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Target Name");
+        alert.setView(editText);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                target.setName(editText.getText().toString());
+                AppDatabase.getInstance().updateTarget(target);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                ;
+            }
+        });
+
+        alert.show();
+    }
+
+    protected void updateTargetCount(long count)
+    {
+        target.setCount(count);
+        AppDatabase.getInstance().updateTarget(target);
     }
 
     @Override
