@@ -85,8 +85,6 @@ public class AppDatabase extends SQLiteOpenHelper
                         COLUMN_COUNT + " INTEGER" +
                         ")");
 
-        sqLiteDatabase.execSQL("INSERT INTO " + TABLE_TARGETS + " (name, count) VALUES ('Eric Peterson', 8675309)");
-
         notifyListeners();
     }
 
